@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}After-Action Report — Operation Dark Horizon{% endblock %}
+
+{% block content %}
+<div class="summary-layout">
+
+  <!-- ── Outcome banner ── -->
+  <div class="outcome-banner {% if 'Defender' in outcome.headline %}banner-win{% elif 'Lost' in outcome.headline %}banner-lose{% else %}banner-mixed{% endif %}">
+    <h1 class="outcome-headline">{{ outcome.headline }}</h1>
+    <p class="outcome-summary-text">{{ outcome.summary }}</p>
+  </div>
+
+  <!-- ── Score & subsystem grid ── -->
+  <div class="summary-stats">
+    <div class="stat-card">
+      <div class="stat-icon">🛡️</div>
+      <div class="stat-value">{{ defender_score }}</div>
+      <div class="stat-label">Defender Points</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">☠️</div>
+      <div class="stat-value">{{ attacker_score }}</div>
+      <div class="stat-label">Attacker Points</div>
+    </div>
+    {% for key, sub in subsystems.items() %}
+    <div class="stat-card subsystem-stat {{ sub.css }}">
+      <div class="stat-icon">{{ sub.icon }}</div>
+      <div class="stat-value">
+        {% if sub.css == 'nominal' %}🟢{% elif sub.css == 'degraded' %}🟡{% else %}🔴{% endif %}
+      </div>
+      <div class="stat-label">{{ sub.label }}</div>
+      <div class="stat-sublabel">
+        {% if sub.css == 'nominal' %}Nominal{% elif sub.css == 'degraded' %}Degraded{% else %}Compromised{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ── Decision history ── -->
+  <div class="summary-section">
+    <h2 class="summary-section-title">📜 Your Decision History</h2>
+    {% for entry in history %}
+    <div class="history-card {% if entry.is_best %}history-good{% else %}history-suboptimal{% endif %}">
+      <div class="history-stage">Stage {{ entry.stage_id }}</div>
+      <div class="history-result-icon">
+        {% if entry.is_best %}✅{% else %}⚠️{% endif %}
+      </div>
+      <div class="history-outcome">{{ entry.outcome_text }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ── Lessons learned ── -->
+  <div class="summary-section">
+    <h2 class="summary-section-title">🎓 Lessons Learned</h2>
+    {% for lesson in lessons %}
+    <div class="lesson-card">
+      <h3 class="lesson-title">{{ lesson.title }}</h3>
+      <div class="lesson-body">
+        {{ lesson.body | replace('\n', '<br>') | safe }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ── Full technique reference ── -->
+  <div class="summary-section">
+    <h2 class="summary-section-title">🔍 Techniques Encountered This Exercise</h2>
+
+    {% if all_sparta %}
+    <div class="technique-group">
+      <div class="technique-group-header sparta-header">🚀 SPARTA Techniques</div>
+      {% for id, tech in all_sparta.items() %}
+      <div class="technique-card">
+        <div class="technique-id sparta-id">{{ id }}</div>
+        <div class="technique-details">
+          <strong>{{ tech.name }}</strong>
+          <span class="technique-tactic">Tactic: {{ tech.tactic }}</span>
+          <p>{{ tech.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if all_mitre %}
+    <div class="technique-group">
+      <div class="technique-group-header mitre-header">🎯 MITRE ATT&amp;CK Techniques</div>
+      {% for id, tech in all_mitre.items() %}
+      <div class="technique-card">
+        <div class="technique-id mitre-id">{{ id }}</div>
+        <div class="technique-details">
+          <strong>{{ tech.name }}</strong>
+          <span class="technique-tactic">Tactic: {{ tech.tactic }}</span>
+          <p>{{ tech.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if all_nist %}
+    <div class="technique-group">
+      <div class="technique-group-header nist-header">📋 NIST SP 800-53 Rev 5 Controls</div>
+      {% for id, ctrl in all_nist.items() %}
+      <div class="technique-card">
+        <div class="technique-id nist-id">{{ id }}</div>
+        <div class="technique-details">
+          <strong>{{ ctrl.name }}</strong>
+          <span class="technique-tactic">Family: {{ ctrl.family }}</span>
+          <p>{{ ctrl.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ── Play again ── -->
+  <div class="summary-replay">
+    <a href="{{ url_for('start') }}" class="btn btn-primary btn-large">🔄 PLAY AGAIN</a>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">🏠 Return to Briefing</a>
+  </div>
+
+</div>
+{% endblock %}

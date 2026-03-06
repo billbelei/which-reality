@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}Stage {{ stage.id }} Outcome{% endblock %}
+
+{% block content %}
+<div class="game-layout">
+
+  <!-- ── Left sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">MISSION STATUS</h3>
+      <div class="score-row">
+        <div class="score-box defender">
+          <div class="score-label">🛡️ Defender</div>
+          <div class="score-value">{{ defender_score }}</div>
+        </div>
+        <div class="score-box attacker">
+          <div class="score-label">☠️ Attacker</div>
+          <div class="score-value">{{ attacker_score }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">SUBSYSTEM HEALTH</h3>
+      {% for key, sub in subsystems.items() %}
+      <div class="subsystem-status {{ sub.css }}">
+        <span class="sub-status-icon">{{ sub.icon }}</span>
+        <div class="sub-status-info">
+          <strong>{{ sub.label }}</strong>
+          <span class="sub-status-badge {{ sub.css }}">
+            {% if sub.css == 'nominal' %}Nominal
+            {% elif sub.css == 'degraded' %}Degraded
+            {% else %}Compromised{% endif %}
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">STAGE PROGRESS</h3>
+      <div class="progress-track">
+        {% for i in range(1, total_stages + 1) %}
+        <div class="progress-step {% if i <= stage.id %}done{% else %}future{% endif %}">
+          {{ i }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main outcome content ── -->
+  <section class="stage-content">
+
+    <div class="stage-header">
+      <span class="stage-badge">STAGE {{ stage.id }} / {{ total_stages }} — OUTCOME</span>
+      <h2 class="stage-title">{{ stage.title }}</h2>
+    </div>
+
+    <!-- Outcome result -->
+    <div class="outcome-box {% if choice.is_best %}outcome-good{% else %}outcome-bad{% endif %}">
+      <div class="outcome-choice-label">
+        {% if choice.is_best %}✅ OPTIMAL DECISION{% else %}⚠️ SUBOPTIMAL DECISION{% endif %}
+      </div>
+      <p class="outcome-choice-text"><em>"{{ choice.text }}"</em></p>
+      <div class="outcome-divider"></div>
+      <p class="outcome-narrative">{{ choice.outcome_text }}</p>
+    </div>
+
+    <!-- Technique analysis -->
+    <div class="analysis-section">
+      <h3 class="analysis-title">🔍 Threat Analysis: What Was Happening Here?</h3>
+
+      {% if sparta %}
+      <div class="technique-group">
+        <div class="technique-group-header sparta-header">
+          <span>🚀 SPARTA Techniques Involved</span>
+        </div>
+        {% for id, tech in sparta.items() %}
+        <div class="technique-card">
+          <div class="technique-id sparta-id">{{ id }}</div>
+          <div class="technique-details">
+            <strong>{{ tech.name }}</strong>
+            <span class="technique-tactic">Tactic: {{ tech.tactic }}</span>
+            <p>{{ tech.description }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if mitre %}
+      <div class="technique-group">
+        <div class="technique-group-header mitre-header">
+          <span>🎯 MITRE ATT&amp;CK Techniques Involved</span>
+        </div>
+        {% for id, tech in mitre.items() %}
+        <div class="technique-card">
+          <div class="technique-id mitre-id">{{ id }}</div>
+          <div class="technique-details">
+            <strong>{{ tech.name }}</strong>
+            <span class="technique-tactic">Tactic: {{ tech.tactic }}</span>
+            <p>{{ tech.description }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if nist %}
+      <div class="technique-group">
+        <div class="technique-group-header nist-header">
+          <span>📋 Relevant NIST SP 800-53 Rev 5 Controls</span>
+        </div>
+        {% for id, ctrl in nist.items() %}
+        <div class="technique-card">
+          <div class="technique-id nist-id">{{ id }}</div>
+          <div class="technique-details">
+            <strong>{{ ctrl.name }}</strong>
+            <span class="technique-tactic">Family: {{ ctrl.family }}</span>
+            <p>{{ ctrl.description }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if choice.subsystem_impacts %}
+      <div class="subsystem-impact-box">
+        <h4>🛰️ Subsystem Impact This Stage</h4>
+        {% for key, delta in choice.subsystem_impacts.items() %}
+        <div class="impact-row">
+          <strong>
+            {% if key == 'c2' %}📡 Command &amp; Control
+            {% elif key == 'comms' %}📻 Communications
+            {% elif key == 'flight_sw' %}💾 Flight Software
+            {% elif key == 'payload' %}🛰️ Payload
+            {% endif %}
+          </strong>
+          <span class="impact-delta">
+            {% if delta == 1 %}⬇️ Degraded
+            {% elif delta >= 2 %}🔴 Compromised
+            {% else %}—{% endif %}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="subsystem-impact-box nominal-impact">
+        <h4>✅ No Subsystem Degradation This Stage</h4>
+        <p>Your decision protected all spacecraft subsystems.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Continue button -->
+    <div class="continue-bar">
+      {% if is_final %}
+      <a href="{{ url_for('summary') }}" class="btn btn-primary btn-large">
+        📊 VIEW AFTER-ACTION REPORT →
+      </a>
+      {% else %}
+      <a href="{{ url_for('game') }}" class="btn btn-primary">
+        ▶ PROCEED TO NEXT STAGE
+      </a>
+      {% endif %}
+    </div>
+
+  </section>
+</div>
+{% endblock %}

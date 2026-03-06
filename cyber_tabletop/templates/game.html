@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Stage {{ stage.id }} — {{ stage.title }}{% endblock %}
+
+{% block content %}
+<div class="game-layout">
+
+  <!-- ── Left sidebar: subsystem status ── -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">MISSION STATUS</h3>
+      <div class="score-row">
+        <div class="score-box defender">
+          <div class="score-label">🛡️ Defender</div>
+          <div class="score-value">{{ defender_score }}</div>
+        </div>
+        <div class="score-box attacker">
+          <div class="score-label">☠️ Attacker</div>
+          <div class="score-value">{{ attacker_score }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">SUBSYSTEM HEALTH</h3>
+      {% for key, sub in subsystems.items() %}
+      <div class="subsystem-status {{ sub.css }}">
+        <span class="sub-status-icon">{{ sub.icon }}</span>
+        <div class="sub-status-info">
+          <strong>{{ sub.label }}</strong>
+          <span class="sub-status-badge {{ sub.css }}">
+              {% if sub.css == 'nominal' %}Nominal
+              {% elif sub.css == 'degraded' %}Degraded
+              {% else %}Compromised{% endif %}
+            </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="sidebar-section">
+      <h3 class="sidebar-title">STAGE PROGRESS</h3>
+      <div class="progress-track">
+        {% for i in range(1, total_stages + 1) %}
+        <div class="progress-step {% if i < stage.id %}done{% elif i == stage.id %}current{% else %}future{% endif %}">
+          {{ i }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main content ── -->
+  <section class="stage-content">
+
+    <div class="stage-header">
+      <span class="stage-badge">STAGE {{ stage.id }} / {{ total_stages }}</span>
+      <h2 class="stage-title">{{ stage.title }}</h2>
+    </div>
+
+    <!-- Background narrative -->
+    <div class="narrative-box">
+      <div class="narrative-label">📋 SITUATION</div>
+      <p>{{ stage.background }}</p>
+    </div>
+
+    <!-- Indicators panel (CRT terminal look) -->
+    <div class="indicators-panel">
+      <div class="indicators-header">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="indicators-title">⚠ GROUND STATION INDICATORS</span>
+      </div>
+      <ul class="indicators-list">
+        {% for indicator in stage.indicators %}
+        <li>
+          <span class="indicator-bullet">▶</span>
+          {{ indicator }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Choices -->
+    <div class="choices-header">
+      <h3>🎮 WHAT IS YOUR RESPONSE?</h3>
+      <p class="choices-note">Select the action you would take:</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('choose') }}" class="choices-form">
+      {% for choice in stage.choices %}
+      <button type="submit" name="choice_id" value="{{ choice.id }}" class="choice-card">
+        <span class="choice-letter">{{ loop.index }}</span>
+        <span class="choice-text">{{ choice.text }}</span>
+      </button>
+      {% endfor %}
+    </form>
+
+  </section>
+</div>
+{% endblock %}
