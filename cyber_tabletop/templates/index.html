@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Operation Dark Horizon — Mission Briefing{% endblock %}
+
+{% block content %}
+<div class="intro-screen">
+  <div class="intro-badge">CLASSIFIED // FOR EXERCISE PURPOSES ONLY</div>
+
+  <h1 class="intro-title">OPERATION DARK HORIZON</h1>
+  <p class="intro-subtitle">A Space Vehicle Cyber Attack Tabletop Exercise</p>
+
+  <div class="intro-scenario-box">
+    <h2>📋 Mission Briefing</h2>
+    <p>
+      You are the senior operations officer at the ground control center for
+      <strong>SENTINEL-7</strong>, a commercial Earth-observation satellite used
+      for weather forecasting and disaster response. A sophisticated adversary
+      (code-named <em>Celestial Dragon</em>) has initiated a cyber campaign
+      against your ground segment and spacecraft.
+    </p>
+    <p>
+      Like the classic <em>Oregon Trail</em>, you will face a series of critical
+      situations and must choose from <strong>three options</strong> at each turn.
+      Your decisions will determine whether SENTINEL-7 survives — or falls to the
+      adversary.
+    </p>
+  </div>
+
+  <div class="intro-objectives">
+    <h2>🎯 Exercise Objectives</h2>
+    <ul>
+      <li>Understand how realistic cyber attacks on space vehicles unfold</li>
+      <li>Recognize indicators visible from a satellite command center</li>
+      <li>Identify SPARTA &amp; MITRE ATT&amp;CK techniques adversaries use</li>
+      <li>Learn which spacecraft subsystems each technique puts at risk</li>
+      <li>Discover which NIST SP 800-53 controls could prevent or detect each attack</li>
+    </ul>
+  </div>
+
+  <div class="intro-subsystems">
+    <h2>🛰️ Spacecraft Subsystems You're Protecting</h2>
+    <div class="subsystem-grid">
+      <div class="subsystem-card">
+        <span class="sub-icon">📡</span>
+        <strong>Command &amp; Control</strong>
+        <small>Ground-to-space uplink/downlink &amp; mission control software</small>
+      </div>
+      <div class="subsystem-card">
+        <span class="sub-icon">📻</span>
+        <strong>Communications</strong>
+        <small>Transponders, encryption modules, &amp; comm protocols</small>
+      </div>
+      <div class="subsystem-card">
+        <span class="sub-icon">💾</span>
+        <strong>Flight Software</strong>
+        <small>Onboard flight computers, attitude control, &amp; firmware</small>
+      </div>
+      <div class="subsystem-card">
+        <span class="sub-icon">🛰️</span>
+        <strong>Payload</strong>
+        <small>Sensors, cameras, &amp; mission-specific instruments</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="intro-scoring">
+    <h2>📊 How Scoring Works</h2>
+    <p>
+      Each decision earns <strong>Defender Points</strong> or hands the adversary
+      <strong>Attacker Points</strong>. Poor choices also degrade specific spacecraft
+      subsystems. At the end of 5 stages, the outcome reflects your cumulative decisions.
+    </p>
+  </div>
+
+  <div class="intro-note">
+    <strong>⚠️ No cyber expertise required.</strong> This exercise is designed for all
+    personnel — focus on sound judgment, teamwork, and situational awareness.
+  </div>
+
+  <a href="{{ url_for('start') }}" class="btn btn-primary btn-large">
+    🚀 BEGIN EXERCISE
+  </a>
+</div>
+{% endblock %}
